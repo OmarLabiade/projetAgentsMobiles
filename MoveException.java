@@ -1,0 +1,4 @@
+
+public class MoveException extends Throwable{
+    
+}
