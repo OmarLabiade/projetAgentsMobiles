@@ -6,10 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 
-public class AgentServeur {
+public class AgentServer {
     private int port;
     private Hashtable<String, Object> services = new Hashtable<>();
-    public AgentServeur(int port) {
+    public AgentServer(int port) {
         this.port = port;
     }
     public void addService(String name, Object service) {
