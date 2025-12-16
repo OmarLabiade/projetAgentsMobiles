@@ -1,10 +1,11 @@
 package agent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StartServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length < 2) {
             System.out.println("Usage: java agent.StartServer <PORT> <TYPE>");
             System.out.println("Types: HOTELS | ANNUAIRE | FILE");
@@ -16,10 +17,8 @@ public class StartServer {
 
         AgentServer server = new AgentServer(port);
 
-        // CONFIGURATION AUTOMATIQUE SELON LE RÔLE
         if (type.equalsIgnoreCase("HOTELS")) {
             ArrayList<String> h = new ArrayList<>();
-            // On génère 100 hôtels fictifs
             for(int i=0; i<100; i++) h.add("Hotel_Num_" + i);
             server.addService("Hotels", h);
             System.out.println("SERVEUR HOTELS PRET (Port " + port + ")");
