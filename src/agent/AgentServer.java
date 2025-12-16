@@ -18,7 +18,7 @@ public class AgentServer {
     public void start() throws IOException {
         try{
             ServerSocket server = new ServerSocket(port);
-            System.out.println(" Serveur pret sur le port " + port);
+            System.out.println("Serveur sur le port " + port);
             while(true){
 
                 Socket client = server.accept();
