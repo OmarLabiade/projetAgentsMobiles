@@ -21,18 +21,15 @@ public class StartServer {
             ArrayList<String> h = new ArrayList<>();
             for(int i=0; i<100; i++) h.add("Hotel_Num_" + i);
             server.addService("Hotels", h);
-            System.out.println("SERVEUR HOTELS PRET (Port " + port + ")");
         }
         else if (type.equalsIgnoreCase("ANNUAIRE")) {
             HashMap<String, String> annuaire = new HashMap<>();
             for(int i=0; i<100; i++) annuaire.put("Hotel_Num_" + i, "06.00.00." + i);
             server.addService("Annuaire", annuaire);
-            System.out.println("SERVEUR ANNUAIRE PRÊT (Port " + port + ")");
         }
         else if (type.equalsIgnoreCase("FILE")) {
             byte[] data = new byte[1024 * 1024 * 10];
             server.addService("bigfile", data);
-            System.out.println("SERVEUR FICHIER PRÊT (Port " + port + ")");
         }
 
         server.start();
