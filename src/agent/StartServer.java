@@ -31,7 +31,7 @@ public class StartServer {
         }
         else if (type.equalsIgnoreCase("FILE")) {
             byte[] data = new byte[1024 * 1024 * 10];
-            server.addService("bigfile", data);
+            server.addService("file", data);
         }
 
         server.start();
