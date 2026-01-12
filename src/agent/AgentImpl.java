@@ -1,61 +1,59 @@
 package agent;
 
 import java.io.*;
-import java.util.Hashtable;
 import java.net.Socket;
+import java.util.Hashtable;
 
 public abstract class AgentImpl implements Agent {
-
     private String name;
     private Node origin;
     private transient Hashtable<String, Object> serverData;
 
-    @Override
     public void init(String name, Node origin) {
         this.name = name;
         this.origin = origin;
     }
 
-    @Override
     public void setNameServer(Hashtable<String, Object> ns) {
-            this.serverData = ns;
+        this.serverData = ns;
     }
 
-    @Override
     public Hashtable<String, Object> getNameServer() {
         return serverData;
     }
 
-    @Override
     public void move(Node target) {
-        try{
-            String className = target.getClass().getName();
-            String classFile = className.replace('.', '/') + ".class";
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(classFile);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
+        try {
+            String className = this.getClass().getName();
+            String path = className.replace('.', '/') + ".class";
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[1024];
             int nRead;
-            while ((nRead = is.read(buffer, 0, buffer.length)) != -1){
-                baos.write(buffer, 0, nRead);
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
             }
-            byte[] code = baos.toByteArray();
+            byte[] bytecode = buffer.toByteArray();
 
-            Socket socket = new Socket(target.getHost(), target.getPort());
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            Socket s = new Socket(target.getHost(), target.getPort());
+            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+
             dos.writeUTF(className);
-            dos.writeInt(code.length);
-            dos.write(code);
+            dos.writeInt(bytecode.length);
+            dos.write(bytecode);
 
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject(this);
-            socket.close();
+
+            s.close();
             Thread.currentThread().stop();
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-    @Override
+
     public void back() {
         move(origin);
     }
