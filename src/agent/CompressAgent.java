@@ -33,7 +33,7 @@ public class CompressAgent extends AgentImpl {
             }
 
             originalSize = rawData.length;
-            System.out.println("Fichier trouve avec" + originalSize + " octets), compression encore");
+            System.out.println("Fichier trouve avec " + originalSize + " octets, compression encore");
 
             try {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -50,6 +50,9 @@ public class CompressAgent extends AgentImpl {
         }
         else if (step == 2) {
             if (compressedData != null) {
+                long endTime = System.currentTimeMillis();
+                long duration = endTime - RunCompressClient.startTime;
+                System.out.println("Temps Total Agent : " + duration + " ms");
                 System.out.println("Taille originale : " + originalSize);
                 System.out.println("Taille compressee: " + compressedData.length);
                 double gain = 100.0 * (originalSize - compressedData.length) / originalSize;
