@@ -10,12 +10,12 @@ public class RmiServer extends UnicastRemoteObject implements RmiService {
 
     @Override
     public byte[] downloadFile(String filename) {
-        return bigFile; // On renvoie tout le paquet (LOURD !)
+        return bigFile;
     }
 
     public static void main(String[] args) {
         try {
-            LocateRegistry.createRegistry(1099); // Port standard RMI
+            LocateRegistry.createRegistry(1099);
             Naming.rebind("FileService", new RmiServer());
         } catch (Exception e) {
             e.printStackTrace();
