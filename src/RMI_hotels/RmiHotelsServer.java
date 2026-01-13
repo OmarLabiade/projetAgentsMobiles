@@ -1,61 +1,54 @@
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Usage:
- *   java RmiHotelsServer <MY_IP> [count]
- * Example:
- *   java RmiHotelsServer 192.168.1.10 100
- */
-public class RmiHotelsServer extends UnicastRemoteObject implements RmiServiceForward {
+public class RmiHotelsServer extends UnicastRemoteObject implements HotelsService {
 
-    private final List<String> hotels;
+    private final Map<String,String> hotels;
 
-    protected RmiHotelsServer(List<String> hotels) throws Exception {
-        super();
-        this.hotels = hotels;
+    public RmiHotelsServer(int count) throws Exception {
+        hotels = new HashMap<>();
+        for(int i=0;i<count;i++){
+            hotels.put("Hotel_Toulouse_" + i, ""); 
+        }
     }
 
     @Override
-    public List<String> getHotels() {
-        return new ArrayList<>(hotels);
-    }
+    public Map<String,String> getMergedResult(String annuaireIP) {
+        try {
+            // Connect to Annuaire server internally (server-to-server call)
+            AnnuaireService annuaire =
+              (AnnuaireService) Naming.lookup("//" + annuaireIP + ":3000/AnnuaireService");
 
-    @Override
-    public java.util.Map<String, String> getDirectory() {
-        return new java.util.HashMap<>();
+            Map<String,String> directory = annuaire.getDirectory();
+
+            Map<String,String> result = new HashMap<>();
+            for(String h : hotels.keySet()) {
+                result.put(h, directory.get(h));
+            }
+            return result;
+
+        } catch(Exception e){
+            e.printStackTrace();
+            return new HashMap<>();
+        }
     }
 
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.err.println("Usage: java RmiHotelsServer <MY_IP> [count]");
-            System.exit(1);
-        }
         try {
-            String myIp = args[0];
-            int count = args.length >= 2 ? Integer.parseInt(args[1]) : 100;
+            String myIP = args[0];
+            int count = Integer.parseInt(args[1]);
 
-            // Hotel_Toulouse_i
-            List<String> data = new ArrayList<>(count);
-            for (int i = 0; i < count; i++) {
-                data.add("Hotel_Toulouse_" + i);
-            }
-
-            System.setProperty("java.rmi.server.hostname", myIp);
-
-            // port 2000
+            System.setProperty("java.rmi.server.hostname", myIP);
             LocateRegistry.createRegistry(2000);
 
-            RmiHotelsServer srv = new RmiHotelsServer(data);
-            Naming.rebind("//" + myIp + ":2000/HotelsService", srv);
+            RmiHotelsServer srv = new RmiHotelsServer(count);
+            Naming.rebind("//" + myIP + ":2000/HotelsService", srv);
 
-            System.out.println("Hotels RMI Server running on port 2000, entries: " + count);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(2);
-        }
+            System.out.println("Hotels Server running on port 2000, entries: "+count);
+
+        } catch(Exception e){ e.printStackTrace(); }
     }
 }

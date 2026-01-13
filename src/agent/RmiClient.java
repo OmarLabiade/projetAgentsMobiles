@@ -1,5 +1,3 @@
-package agent;
-
 import java.rmi.Naming;
 
 public class RmiClient {
@@ -9,15 +7,17 @@ public class RmiClient {
 
             long start = System.currentTimeMillis();
 
-            RmiService service = (RmiService) Naming.lookup("//" + ip + ":1099/FileService");
-            byte[] res = service.downloadFile("bigfile");
+            RmiService service =
+              (RmiService) Naming.lookup("//" + ip + ":1099/FileService");
+
+            byte[] compressed = service.compressFile("bigfile");
 
             long end = System.currentTimeMillis();
 
             System.out.println("Temps RMI : " + (end - start) + " ms");
-            System.out.println("Taille recue : " + res.length + " octets");
+            System.out.println("Taille compressée : " + compressed.length + " octets");
 
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }

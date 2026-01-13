@@ -1,45 +1,27 @@
 import java.rmi.Naming;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RmiClientForward {
 
     public static void main(String[] args) {
-
         try {
-            String ipHotels = args[0];
-            String ipAnnuaire = args[1];
+            String hotelsIP = args[0];
+            String annuaireIP = args[1];
 
             long start = System.currentTimeMillis();
 
-            // Sff
-            System.out.println("Arrivee sur A pour recuperation liste");
-            RmiServiceForward hotelsSrv =
-                (RmiServiceForward) Naming.lookup("//" + ipHotels + ":2000/HotelsService");
-            List<String> listeHotels = hotelsSrv.getHotels();
+            HotelsService hotels =
+              (HotelsService) Naming.lookup("//" + hotelsIP + ":2000/HotelsService");
 
-
-            System.out.println("Arrivee sur B pour recuperation annuaire");
-            RmiServiceForward annuaireSrv =
-                (RmiServiceForward) Naming.lookup("//" + ipAnnuaire + ":3000/AnnuaireService");
-            Map<String,String> annuaire = annuaireSrv.getDirectory();
-
-
-            Map<String,String> result = new HashMap<>();
-            for (String h : listeHotels) {
-                result.put(h, annuaire.get(h));
-            }
+            // Single remote call — exactly like mobile-agent return
+            Map<String,String> result = hotels.getMergedResult(annuaireIP);
 
             long end = System.currentTimeMillis();
 
-
             System.out.println("Resultat:");
             System.out.println(result);
-            System.out.println("Elapsed time (ms): " + (end - start));
+            System.out.println("Elapsed time (ms): " + (end-start));
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch(Exception e){ e.printStackTrace(); }
     }
 }
