@@ -26,7 +26,7 @@ public class StartServer {
             server.addService("Annuaire", data);
         }
         else if (type.equalsIgnoreCase("FILE")) {
-            byte[] bigData = new byte[1024 * 1024 * 10];
+            byte[] bigData = new byte[1024 * 1024 * 1000];
             server.addService("bigfile", bigData);
         }
 
